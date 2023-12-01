@@ -1,4 +1,14 @@
 defmodule Day1 do
+  def main() do
+    File.stream!("inputs/day1.txt")
+    |> part1()
+    |> IO.inspect(label: "part 1")
+
+    File.stream!("inputs/day1.txt")
+    |> part2()
+    |> IO.inspect(label: "part 2")
+  end
+
   def part1(lines) do
     lines
     |> Enum.map(&match_digits/1)
