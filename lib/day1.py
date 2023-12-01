@@ -1,23 +1,28 @@
 import re
 
-def parts(lines, regex):
-    map_ = dict(zip("one,two,three,four,five,six,seven,eight,nine".split(","), map(str, range(1,10))))
+WORDS = "one,two,three,four,five,six,seven,eight,nine".split(",")
+WORD_TO_NUMBER = dict(zip(WORDS, map(str, range(1, 10))))
 
-    total = 0
-    for line in lines:
-        matches = regex.findall(line)
-        first = matches[0]
-        last = matches[-1]
-        total += int(map_.get(first, first) + map_.get(last, last))
-    print(total)
+
+def convert_to_number(line, regex):
+    matches = regex.findall(line)
+    first = matches[0]
+    last = matches[-1]
+    return int(WORD_TO_NUMBER.get(first, first) + WORD_TO_NUMBER.get(last, last))
+
+
+def parts(lines, regex):
+    return sum(convert_to_number(line, regex) for line in lines)
+
 
 def main():
     digit_match = re.compile(r"(\d)")
-    number_match = re.compile(r"(?=(\d|one|two|three|four|five|six|seven|eight|nine))")
+    number_match = re.compile(rf"(?=(\d|{'|'.join(WORDS)}))")
     with open("inputs/day1.txt") as f:
         lines = f.readlines()
-    parts(lines, digit_match)
-    parts(lines, number_match)
+    print("part 1:", parts(lines, digit_match))
+    print("part 2:", parts(lines, number_match))
+
 
 if __name__ == "__main__":
     main()

@@ -2,14 +2,23 @@ defmodule Day1Test do
   use ExUnit.Case
 
   test "gets 142" do
-    assert "inputs/day1_example.txt" |> File.stream!() |> Day1.part1() == 142
+    assert 142 ==
+             "inputs/day1_example.txt"
+             |> File.stream!()
+             |> Day1.calculate_calibration(Day1.digits())
   end
 
   test "gets 281" do
-    assert "inputs/day1_example2.txt" |> File.stream!() |> Day1.part2() == 281
+    assert 281 ==
+             "inputs/day1_example2.txt"
+             |> File.stream!()
+             |> Day1.calculate_calibration(Day1.numbers())
   end
 
   test "dodgy" do
-    assert "five5nzlcdc45clclzrrkjthreeoneoneightsd\n" |> String.split() |> Day1.part2() == 58
+    assert 58 ==
+             "five5nzlcdc45clclzrrkjthreeoneoneightsd\n"
+             |> String.split()
+             |> Day1.calculate_calibration(Day1.numbers())
   end
 end

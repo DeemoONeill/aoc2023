@@ -1,61 +1,43 @@
 defmodule Day1 do
+  @digits ~r"\d"
+
+  def digits(), do: @digits
+
+  @spelled_out ~r"(?=(\d|one|two|three|four|five|six|seven|eight|nine))"
+
+  def numbers(), do: @spelled_out
+
+  @mapping ~W[one two three four five six seven eight nine]
+           |> Enum.zip(Enum.map(1..9, &to_string/1))
+           |> Map.new()
+
   def main() do
-    File.stream!("inputs/day1.txt")
-    |> part1()
+    lines =
+      File.read!("inputs/day1.txt")
+      |> String.split()
+
+    lines
+    |> calculate_calibration(@digits)
     |> IO.inspect(label: "part 1")
 
-    File.stream!("inputs/day1.txt")
-    |> part2()
+    lines
+    |> calculate_calibration(@spelled_out)
     |> IO.inspect(label: "part 2")
   end
 
-  def part1(lines) do
+  def calculate_calibration(lines, regex) do
     lines
-    |> Enum.map(&match_digits/1)
-    |> Enum.map(&extract/1)
+    |> Stream.map(&Regex.scan(regex, &1))
+    |> Stream.map(&extract/1)
     |> Enum.sum()
-  end
-
-  def part2(lines) do
-    mapping =
-      ~W[one two three four five six seven eight nine]
-      |> Enum.zip(Enum.map(1..9, &to_string/1))
-      |> Map.new()
-
-    lines
-    |> Stream.map(&match_numbers/1)
-    |> Stream.map(&extract(&1, mapping))
-    |> Enum.sum()
-  end
-
-  defp match_numbers(line) do
-    first =
-      ~r"\d|one|two|three|four|five|six|seven|eight|nine"
-      |> Regex.run(line)
-
-    last =
-      ~r"\d|eno|enin|thgie|neves|xis|evif|ruof|eerht|owt"
-      |> Regex.run(String.reverse(line))
-      |> Enum.map(&String.reverse/1)
-
-    [first, last]
-  end
-
-  defp match_digits(line) do
-    ~r"\d"
-    |> Regex.scan(line)
   end
 
   defp extract(list) do
-    ((List.first(list) |> hd) <> (List.last(list) |> hd))
-    |> String.to_integer()
-  end
+    first = List.first(list) |> Enum.join()
 
-  defp extract(list, mapping) do
-    first = List.first(list) |> hd
-    last = List.last(list) |> hd
+    last = List.last(list) |> Enum.join()
 
-    (Map.get(mapping, first, first) <> Map.get(mapping, last, last))
+    (Map.get(@mapping, first, first) <> Map.get(@mapping, last, last))
     |> String.to_integer()
   end
 end
