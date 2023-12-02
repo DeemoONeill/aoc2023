@@ -9,7 +9,7 @@ Game 5: 6 red, 1 blue, 3 green; 2 blue, 1 red, 2 green"
   @games @example |> String.split("\n") |> Enum.map(&Day2.new/1)
 
   test "instantiates struct" do
-    assert %Day2{game: 1, rounds: [[blue: 3, red: 4], [red: 1, green: 2, blue: 6], [green: 2]]} ==
+    assert %Day2{game: 1, rounds: %{red: 4, green: 2, blue: 6}} ==
              @example
              |> String.split("\n")
              |> hd
