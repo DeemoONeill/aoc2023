@@ -28,13 +28,16 @@ defmodule Mix.Tasks.Aoc do
 
     unless File.exists?(input_file) or Date.utc_today().day < String.to_integer(day) do
       cookie = System.get_env("AOC_COOKIE")
+
       unless cookie do
         raise "AOC_COOKIE environment variable not set"
       end
 
       HTTPoison.start()
+
       HTTPoison.get!("https://adventofcode.com/2023/day/#{day}/input",
-                     ["Cookie": cookie])
+        Cookie: cookie
+      )
       |> tap(fn %{body: body} -> File.write!(input_file, body) end)
     end
 
@@ -42,37 +45,36 @@ defmodule Mix.Tasks.Aoc do
 
     unless File.exists?(lib_file) do
       File.write("lib/day#{day}.ex", """
-defmodule Day#{day} do
-  # defstruct
+      defmodule Day#{day} do
+        # defstruct
 
-  def main() do
-    _data = File.read!(\"inputs/day#{day}.txt\") |> IO.inspect(label: \"part 1\")
-  end
-  def part1(_data) do
-  end
+        def main() do
+          _data = File.read!(\"inputs/day#{day}.txt\") |> IO.inspect(label: \"part 1\")
+        end
+        def part1(_data) do
+        end
 
-  def part2(_data) do
-  end
-end
-""")
+        def part2(_data) do
+        end
+      end
+      """)
     end
 
     test_file = "test/day#{day}_test.exs"
 
     unless File.exists?(test_file) do
       File.write("test/day#{day}_test.exs", """
-defmodule Day#{day}Test do
-  use ExUnit.Case
+      defmodule Day#{day}Test do
+        use ExUnit.Case
 
-  #@example ""
+        #@example ""
 
-  test \"\" do
-    assert true
-  end
-end
+        test \"\" do
+          assert true
+        end
+      end
 
-""")
-
+      """)
     end
 
     test_file = "test/day#{day}_test.exs"
