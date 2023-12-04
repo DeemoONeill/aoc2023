@@ -47,13 +47,13 @@ defmodule Mix.Tasks.Aoc do
       File.write("lib/day#{day}.ex", """
       defmodule Day#{day} do
         # defstruct
-
+      
         def main() do
           _data = File.read!(\"inputs/day#{day}.txt\") |> IO.inspect(label: \"part 1\")
         end
         def part1(_data) do
         end
-
+      
         def part2(_data) do
         end
       end
@@ -66,14 +66,14 @@ defmodule Mix.Tasks.Aoc do
       File.write("test/day#{day}_test.exs", """
       defmodule Day#{day}Test do
         use ExUnit.Case
-
+      
         #@example ""
-
+      
         test \"\" do
           assert true
         end
       end
-
+      
       """)
     end
 
