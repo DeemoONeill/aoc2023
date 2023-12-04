@@ -7,22 +7,24 @@ defmodule Day4 do
 
     %Day4{
       card: card |> String.trim_leading("Card ") |> String.trim() |> String.to_integer(),
-      winning:
-        winning
-        |> String.split(" ", trim: true)
-        |> Enum.map(&(&1 |> String.trim() |> String.to_integer()))
-        |> MapSet.new(),
-      seen:
-        seen
-        |> String.split(" ", trim: true)
-        |> Enum.map(&(&1 |> String.trim() |> String.to_integer()))
-        |> MapSet.new()
+      winning: winning |> parse_to_set(),
+      seen: seen |> parse_to_set()
     }
+  end
+
+  defp parse_to_set(nums) do
+    nums
+    |> String.split(" ", trim: true)
+    |> Enum.map(&(&1 |> String.trim() |> String.to_integer()))
+    |> MapSet.new()
   end
 
   def main() do
     scratchcards =
-      File.read!("inputs/day4.txt") |> String.split("\n", trim: true) |> Enum.map(&new/1)
+      File.read!("inputs/day4.txt")
+      |> String.split("\n", trim: true)
+      |> Enum.map(&new/1)
+      |> Enum.map(&number_of_winners/1)
 
     scratchcards
     |> part1
@@ -33,21 +35,18 @@ defmodule Day4 do
     |> IO.inspect(label: "part 2")
   end
 
-  def part1(cards) do
-    cards
-    |> Enum.map(&number_of_winners/1)
+  def part1(winners) do
+    winners
     |> Enum.filter(&(&1 != 0))
     |> Enum.map(&(:math.pow(2, &1 - 1) |> round))
     |> Enum.sum()
   end
 
-  def part2(cards) do
-    number_of_winners =
-      cards
-      |> Enum.map(fn card -> card |> number_of_winners end)
-
-    for {won, idx} <- Enum.with_index(number_of_winners, 1), reduce: {%{}, 0} do
-      {map, current_total} ->
+  def part2(winners) do
+    {_, total} =
+      winners
+      |> Enum.with_index(1)
+      |> Enum.reduce({%{}, 0}, fn {won, idx}, {map, current_total} ->
         copies = Map.get(map, idx, 0) + 1
 
         additions =
@@ -59,8 +58,8 @@ defmodule Day4 do
           end
 
         {Map.merge(additions, map, fn _, val1, val2 -> val1 + val2 end), current_total + copies}
-    end
-    |> elem(1)
+      end)
+      total
   end
 
   def number_of_winners(%Day4{winning: winning, seen: seen}) do
