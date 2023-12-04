@@ -43,23 +43,27 @@ defmodule Day4 do
   end
 
   def part2(winners) do
-    {_, total} =
+    {_card_map, total} =
       winners
       |> Enum.with_index(1)
-      |> Enum.reduce({%{}, 0}, fn {won, idx}, {map, current_total} ->
-        copies = Map.get(map, idx, 0) + 1
+      |> Enum.reduce({%{}, 0}, &count_cards/2)
 
-        additions =
-          unless won == 0 do
-            Enum.zip((idx + 1)..(idx + won), List.duplicate(copies, won))
-            |> Map.new()
-          else
-            %{}
-          end
+    total
+  end
 
-        {Map.merge(additions, map, fn _, val1, val2 -> val1 + val2 end), current_total + copies}
-      end)
-      total
+  defp count_cards({won, card_number}, {card_map, current_total}) do
+    copies = Map.get(card_map, card_number, 0) + 1
+
+    additions =
+      unless won == 0 do
+        Enum.zip((card_number + 1)..(card_number + won), List.duplicate(copies, won))
+        |> Map.new()
+        |> Map.merge(card_map, fn _, val1, val2 -> val1 + val2 end)
+      else
+        card_map
+      end
+
+    {additions, current_total + copies}
   end
 
   def number_of_winners(%Day4{winning: winning, seen: seen}) do
