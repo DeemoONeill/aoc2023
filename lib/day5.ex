@@ -8,6 +8,7 @@ defmodule Day5 do
       |> String.split()
       |> Enum.map(fn
         <<"seed"::binary, _::binary>> -> nil
+        <<"map"::binary, _::binary>> -> nil
         num -> String.to_integer(num)
       end)
       |> Enum.filter(& &1)
@@ -36,7 +37,7 @@ defmodule Day5 do
     |> IO.inspect(label: "part 1")
 
     part2(seeds, map)
-    |> IO.inspect(label: "part 1")
+    |> IO.inspect(label: "part 2")
   end
 
   def part1(seeds, map) when is_map(map) do
@@ -57,28 +58,50 @@ defmodule Day5 do
       |> mapping(map["temperature-to-humidity"])
       # |>IO.inspect(label: "humidity")
       |> mapping(map["humidity-to-location"])
-
     end)
     |> Enum.min()
   end
 
   def part2(seeds, map) do
-    seeds
-    |> Enum.chunk_every(2)
-    |> Enum.map(fn chunk ->
-      Task.async(fn ->
-        [start, contains] = chunk
+    seed_ranges =
+      seeds
+      |> Enum.chunk_every(2)
+      |> Enum.map(fn [start, contains] ->
         start..(start + contains - 1)
-        |> MapSet.new()
-        |> part1(map)
       end)
+
+    1..77_435_467
+    |> Stream.map(fn location ->
+      seed =
+        location
+        |> rev_mapping(map["humidity-to-location"])
+        |> rev_mapping(map["temperature-to-humidity"])
+        |> rev_mapping(map["light-to-temperature"])
+        |> rev_mapping(map["water-to-light"])
+        |> rev_mapping(map["fertilizer-to-water"])
+        |> rev_mapping(map["soil-to-fertilizer"])
+        |> rev_mapping(map["seed-to-soil"])
+
+      present = seed_ranges |> Enum.any?(fn range -> seed in range end)
+      {present, location}
     end)
-    |> Task.await_many(:infinity)
-    |> Enum.min
+    |> Enum.reduce_while(0, fn
+      {false, _}, _ -> {:cont, 0}
+      {true, location}, _ -> {:halt, location}
+    end)
   end
 
   # destination, source, num, difference
-  # 50..50+num-1, 98..98+num-1, 2, 50-98
+  # 50..50+num
+  def rev_mapping(seed, []), do: seed
+
+  def rev_mapping(seed, [[destination, source, num] | tl]) do
+    IO.inspect({seed, destination, source})
+    case seed do
+      seed when seed in destination..(destination + (num - 1)) -> seed + (source - destination)
+      seed -> mapping(seed, tl)
+    end
+  end
 
   def mapping(seed, []), do: seed
 
