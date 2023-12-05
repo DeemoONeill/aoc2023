@@ -1,5 +1,4 @@
 defmodule Day5 do
-  # defstruct
   def parse_maps(data) do
     [seeds | maps] = data |> String.split("\n\n")
 
@@ -20,7 +19,7 @@ defmodule Day5 do
 
         %{name => mappings |> Enum.map(&parse_mappings/1)}
       end)
-      |> Enum.reduce(%{}, &Map.merge/2)
+      |> Enum.reduce(&Map.merge/2)
 
     {seeds, map}
   end
@@ -32,12 +31,15 @@ defmodule Day5 do
   def main() do
     {seeds, map} = File.read!("inputs/day5.txt") |> parse_maps
 
+    start = DateTime.utc_now() |> DateTime.to_unix(:millisecond)
     part1(seeds, map)
     |> IO.inspect(label: "part 1")
 
     # hunch that it's not less than 10 mn
-    part2(seeds, map, 10_000_000)
+    part2(seeds, map)
     |> IO.inspect(label: "part 2")
+    end_time = DateTime.utc_now() |> DateTime.to_unix(:millisecond)
+    IO.inspect(end_time - start, label: "time taken (ms)")
   end
 
   def part1(seeds, map) when is_map(map) do
@@ -55,7 +57,7 @@ defmodule Day5 do
     |> Enum.min()
   end
 
-  def part2(seeds, map, range_start \\ 0) do
+  def part2(seeds, map) do
     seed_ranges =
       seeds
       |> Enum.chunk_every(2)
@@ -63,25 +65,37 @@ defmodule Day5 do
         start..(start + contains - 1)
       end)
 
-    range_start..910_845_529
-    |> Stream.map(fn location ->
-      seed =
-        location
-        |> rev_mapping(map["humidity-to-location"])
-        |> rev_mapping(map["temperature-to-humidity"])
-        |> rev_mapping(map["light-to-temperature"])
-        |> rev_mapping(map["water-to-light"])
-        |> rev_mapping(map["fertilizer-to-water"])
-        |> rev_mapping(map["soil-to-fertilizer"])
-        |> rev_mapping(map["seed-to-soil"])
+    # approximate the amount by skipping parts of the ranges and calulate this in parallel
+    approx =
+      seed_ranges
+      |> Enum.map(fn range ->
+        broad_range = Range.new(range.first, range.last, div(Range.size(range), 100)+1)
+        Task.async(fn -> part1(broad_range, map) end)
+      end)
+      |> Task.await_many()
+      |> Enum.min()
 
-      present = seed_ranges |> Enum.any?(fn range -> seed in range end)
-      {present, location}
-    end)
+    (approx*0.979 |> round)..(approx)
+    |> Stream.map(&calculate_location(&1, map, seed_ranges))
     |> Enum.reduce_while(0, fn
       {false, _}, _ -> {:cont, 0}
       {true, location}, _ -> {:halt, location}
     end)
+  end
+
+  def calculate_location(location, map, seed_ranges) do
+    seed =
+      location
+      |> rev_mapping(map["humidity-to-location"])
+      |> rev_mapping(map["temperature-to-humidity"])
+      |> rev_mapping(map["light-to-temperature"])
+      |> rev_mapping(map["water-to-light"])
+      |> rev_mapping(map["fertilizer-to-water"])
+      |> rev_mapping(map["soil-to-fertilizer"])
+      |> rev_mapping(map["seed-to-soil"])
+
+    present = seed_ranges |> Enum.any?(fn range -> seed in range end)
+    {present, location}
   end
 
   def rev_mapping(seed, []), do: seed
