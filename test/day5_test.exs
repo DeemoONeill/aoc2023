@@ -46,6 +46,6 @@ defmodule Day5Test do
 
   test "part2" do
     {seeds, map} = @example |> Day5.parse_maps()
-    assert Day5.part2(seeds, map) == 45
+    assert Day5.part2(seeds, map) == 46
   end
 end

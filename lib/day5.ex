@@ -8,7 +8,6 @@ defmodule Day5 do
       |> String.split()
       |> Enum.map(fn
         <<"seed"::binary, _::binary>> -> nil
-        <<"map"::binary, _::binary>> -> nil
         num -> String.to_integer(num)
       end)
       |> Enum.filter(& &1)
@@ -36,7 +35,8 @@ defmodule Day5 do
     part1(seeds, map)
     |> IO.inspect(label: "part 1")
 
-    part2(seeds, map)
+    # hunch that it's not less than 10 mn
+    part2(seeds, map, 10_000_000)
     |> IO.inspect(label: "part 2")
   end
 
@@ -44,25 +44,18 @@ defmodule Day5 do
     seeds
     |> Stream.map(fn seed ->
       seed
-      # |>IO.inspect(label: "seed")
       |> mapping(map["seed-to-soil"])
-      # |>IO.inspect(label: "soil")
       |> mapping(map["soil-to-fertilizer"])
-      # |>IO.inspect(label: "fertilizer")
       |> mapping(map["fertilizer-to-water"])
-      # |>IO.inspect(label: "water")
       |> mapping(map["water-to-light"])
-      # |>IO.inspect(label: "light")
       |> mapping(map["light-to-temperature"])
-      # |>IO.inspect(label: "temperature")
       |> mapping(map["temperature-to-humidity"])
-      # |>IO.inspect(label: "humidity")
       |> mapping(map["humidity-to-location"])
     end)
     |> Enum.min()
   end
 
-  def part2(seeds, map) do
+  def part2(seeds, map, range_start \\ 0) do
     seed_ranges =
       seeds
       |> Enum.chunk_every(2)
@@ -70,7 +63,7 @@ defmodule Day5 do
         start..(start + contains - 1)
       end)
 
-    1..77_435_467
+    range_start..910_845_529
     |> Stream.map(fn location ->
       seed =
         location
@@ -91,15 +84,12 @@ defmodule Day5 do
     end)
   end
 
-  # destination, source, num, difference
-  # 50..50+num
   def rev_mapping(seed, []), do: seed
 
-  def rev_mapping(seed, [[destination, source, num] | tl]) do
-    IO.inspect({seed, destination, source})
+  def rev_mapping(seed, [[source, destination, num] | tl]) do
     case seed do
-      seed when seed in destination..(destination + (num - 1)) -> seed + (source - destination)
-      seed -> mapping(seed, tl)
+      seed when seed in source..(source + (num - 1)) -> seed + destination - source
+      seed -> rev_mapping(seed, tl)
     end
   end
 
@@ -107,7 +97,7 @@ defmodule Day5 do
 
   def mapping(seed, [[destination, source, num] | tl]) do
     case seed do
-      seed when seed in source..(source + (num - 1)) -> seed + destination - source
+      seed when seed in source..(source + (num - 1)) -> seed + (destination - source)
       seed -> mapping(seed, tl)
     end
   end
