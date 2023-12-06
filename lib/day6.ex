@@ -1,5 +1,4 @@
 defmodule Day6 do
-
   def parse(data, func \\ &parse_line/1) do
     [times, distances] = data |> String.split("\n", trim: true)
 
@@ -43,15 +42,51 @@ defmodule Day6 do
   end
 
   def ways_of_winning({time, distance}) do
-    [2..(time - 2), (time - 2)..2]
-    |> Stream.zip()
-    |> Enum.reduce(0, fn {time_held, time_left}, acc ->
-      if time_held * time_left > distance do
-        acc + 1
-      else
-        acc
-      end
-    end)
+    {from, to} = quadratic(time, distance)
+
+    start =
+      from..to
+      |> Enum.reduce_while(0, &reducer(&1, &2, time, distance))
+
+    end_ =
+      to..from
+      |> Enum.reduce_while(0, &reducer(&1, &2, time, distance))
+
+    1 + end_ - start
+  end
+
+  defp reducer(time_taken, _acc, time, distance) do
+    if time_taken * (time - time_taken) > distance do
+      {:halt, time_taken}
+    else
+      {:cont, 0}
+    end
+  end
+
+  @doc """
+  Formula for a winning race is
+
+  x * (time-x) - distance > 0
+
+  which rerranged is
+  -x^2 + time*x - distance
+  -1x^2 + time*x - distance
+
+  solving the roots with quadratic formula gives where the curve intersects
+  with the x axis. adding 1 to the larger root, and subtracting 1 from the smaller
+  root means we don't have to worry about how elixir rounds the numbers
+  we can then use these to check a handful and just get the difference between the two
+  """
+  def quadratic(time, distance) do
+    a = -1
+    b = time
+    c = -distance
+    bs = b * b
+
+    positive = (-b + :math.sqrt(bs - 4 * a * c)) / (2 * a)
+    negative = (-b - :math.sqrt(bs - 4 * a * c)) / (2 * a)
+
+    {round(positive - 1), round(negative + 1)}
   end
 
   def part2([time, distance]) do

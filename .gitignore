@@ -25,4 +25,9 @@ aoc2023-*.tar
 # Temporary files, for example, from tests.
 /tmp/
 
+# aoc input files
 inputs/*
+
+# python virtual env
+
+venv/
