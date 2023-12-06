@@ -65,7 +65,7 @@ defmodule Day5 do
         start..(start + contains - 1)
       end)
 
-    # approximate the amount by skipping parts of the ranges and calulate this in parallel
+    # approximate the amount by skipping parts of the ranges and calculate this in parallel
     approx =
       seed_ranges
       |> Enum.map(fn range ->
