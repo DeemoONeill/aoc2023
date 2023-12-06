@@ -41,6 +41,10 @@ defmodule Day6 do
     |> Enum.product()
   end
 
+  def part2([time, distance]) do
+    ways_of_winning({time, distance})
+  end
+
   def ways_of_winning({time, distance}) do
     {from, to} = quadratic(time, distance)
 
@@ -89,7 +93,5 @@ defmodule Day6 do
     {round(positive - 1), round(negative + 1)}
   end
 
-  def part2([time, distance]) do
-    ways_of_winning({time, distance})
-  end
+
 end
