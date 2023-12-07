@@ -32,12 +32,14 @@ defmodule Day5 do
     {seeds, map} = File.read!("inputs/day5.txt") |> parse_maps
 
     start = DateTime.utc_now() |> DateTime.to_unix(:millisecond)
+
     part1(seeds, map)
     |> IO.inspect(label: "part 1")
 
     # hunch that it's not less than 10 mn
     part2(seeds, map)
     |> IO.inspect(label: "part 2")
+
     end_time = DateTime.utc_now() |> DateTime.to_unix(:millisecond)
     IO.inspect(end_time - start, label: "time taken (ms)")
   end
@@ -69,13 +71,13 @@ defmodule Day5 do
     approx =
       seed_ranges
       |> Enum.map(fn range ->
-        broad_range = Range.new(range.first, range.last, div(Range.size(range), 100)+1)
+        broad_range = Range.new(range.first, range.last, div(Range.size(range), 100) + 1)
         Task.async(fn -> part1(broad_range, map) end)
       end)
       |> Task.await_many()
       |> Enum.min()
 
-    (approx*0.979 |> round)..(approx)
+    ((approx * 0.979) |> round)..approx
     |> Stream.map(&calculate_location(&1, map, seed_ranges))
     |> Enum.reduce_while(0, fn
       {false, _}, _ -> {:cont, 0}

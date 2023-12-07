@@ -92,6 +92,4 @@ defmodule Day6 do
 
     {round(positive - 1), round(negative + 1)}
   end
-
-
 end
