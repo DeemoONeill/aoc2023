@@ -48,11 +48,12 @@ defmodule Day7 do
       |> Map.values()
       |> Enum.sort(:desc)
 
-    top = unless values == [] do
-      jokers + (values |> hd)
-    else
-      jokers
-    end
+    top =
+      unless values == [] do
+        jokers + (values |> hd)
+      else
+        jokers
+      end
 
     tail =
       unless values == [] do
@@ -61,12 +62,10 @@ defmodule Day7 do
         []
       end
 
-    hand_num = [top | tail]  |> hand_value
+    hand_num = [top | tail] |> hand_value
 
     %Day7{cards: cards, bid: bid |> String.to_integer(), hand: hand_num}
   end
-
-
 
   def hand_value(nums) do
     case nums do
@@ -93,5 +92,4 @@ defmodule Day7 do
     |> Enum.with_index(1)
     |> Enum.reduce(0, fn {card, index}, acc -> acc + card.bid * index end)
   end
-
 end
