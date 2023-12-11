@@ -28,18 +28,16 @@ defmodule Day9 do
 
   def part1(lines) do
     lines
-    |> Enum.map(&determine_sequence/1)
-    |> Enum.map(fn sequence -> sequence |> Enum.map(&hd/1) |> Enum.sum() end)
+    |> Stream.map(&determine_sequence/1)
+    |> Stream.map(fn sequence -> sequence |> Enum.map(&hd/1) |> Enum.sum() end)
     |> Enum.sum()
   end
 
   def part2(lines) do
     lines
-    |> Enum.map(&determine_sequence/1)
-    |> Enum.map(fn sequence ->
-      sequence
-      |> Enum.map(&List.last/1)
-      |> Enum.reduce(fn current, previous -> current - previous end)
+    |> Stream.map(&determine_sequence/1)
+    |> Stream.map(fn sequence ->
+      sequence |> Stream.map(&List.last/1) |> Enum.reduce(&-/2)
     end)
     |> Enum.sum()
   end
