@@ -21,12 +21,6 @@ defmodule Day13 do
     |> Enum.sum()
   end
 
-  def part2(floors) do
-    floors
-    |> Enum.map(&check_smudges/1)
-    |> Enum.sum()
-  end
-
   def check_entry(entry) do
     entry = entry |> String.split() |> Enum.map(&String.graphemes/1)
 
