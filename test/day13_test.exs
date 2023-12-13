@@ -27,7 +27,7 @@ defmodule Day13Test do
 ..#..#.##.#..#.
 #.##........##.
 .....#....#...."
- @niller2 "...####.....#
+  @niller2 "...####.....#
 ####..####...
 #..#..#..#..#
 #..#..#..###.
@@ -59,6 +59,7 @@ defmodule Day13Test do
   test "vertical example has smudged reflection at 1" do
     assert @vexample |> check_smudges == 300
   end
+
   test "horizontal example has smudged reflection at 3" do
     assert @hexample |> check_smudges == 100
   end
@@ -68,21 +69,21 @@ defmodule Day13Test do
   end
 
   test "niller 2 == 5" do
-    assert @niller2 |>  check_entry == 5
+    assert @niller2 |> check_entry == 5
   end
 
   test "example 3 == 600" do
-  assert "####.##...#..
+    assert "####.##...#..
 .#.....##.#.#
 ....#.#....#.
 ..#..#..###..
 ....####..###
 ..####..##...
-..####..##..."  |> check_entry == 600
+..####..##..." |> check_entry == 600
   end
 
   test "example 4 == nil" do
-  assert ".#..#..#.###.##
+    assert ".#..#..#.###.##
 ....#...##...##
 #....##.#...###
 #.##.#...#.#.##
@@ -96,6 +97,4 @@ defmodule Day13Test do
 #######.##.#.##
 ##..###.#...#.." |> check_entry == 14
   end
-
-
 end

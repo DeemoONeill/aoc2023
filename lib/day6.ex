@@ -69,13 +69,13 @@ defmodule Day6 do
 
   @doc """
   Formula for a winning race is
-
+  
   x * (time-x) - distance > 0
-
+  
   which rerranged is
   -x^2 + time*x - distance
   -1x^2 + time*x - distance
-
+  
   solving the roots with quadratic formula gives where the curve intersects
   with the x axis. adding 1 to the larger root, and subtracting 1 from the smaller
   root means we don't have to worry about how elixir rounds the numbers
