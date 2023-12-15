@@ -62,7 +62,8 @@ O..#.OO...
   end
 
   test "sorted example == result" do
-    assert @example |> parse |> transpose |> Enum.map(&sort/1) == @result |> transpose |> Enum.to_list
+    assert @example |> parse |> transpose |> Enum.map(&sort/1) ==
+             @result |> transpose |> Enum.to_list()
   end
 
   test "sort_boulder" do
