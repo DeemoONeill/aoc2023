@@ -1,6 +1,4 @@
 defmodule Day15 do
-  # defstruct
-
   def main() do
     strings = File.read!("inputs/day15.txt") |> String.trim() |> String.split(",", trim: true)
 
@@ -14,25 +12,28 @@ defmodule Day15 do
 
   def part2(strings) do
     strings
-    |> Enum.map(fn string ->
+    |> Enum.map(&get_lenses/1)
+    |> Enum.reduce(%{}, &organise_lens_boxes/2)
+    |> Enum.reduce(0, fn {box, lenses}, acc -> acc + lens_power(lenses, box) end)
+  end
+
+  defp organise_lens_boxes({hash, string}, acc) do
+    case String.split(string, "=") do
+      [key, value] -> acc |> add_to_hashmap(hash, key, value)
+      [minus] -> acc |> remove_from_hashmap(hash, minus)
+    end
+  end
+
+  def get_lenses(string) do
       split_char = if String.contains?(string, "-"), do: "-", else: "="
       {String.split(string, split_char) |> hd |> hash, string}
-    end)
-    |> Enum.reduce(%{}, fn {hash, string}, acc ->
-      case String.split(string, "=") do
-        [key, value] -> acc |> add_to_hashmap(hash, key, value)
-        [minus] -> acc |> remove_from_hashmap(hash, minus)
-      end
-    end)
-    |> Enum.filter(fn {key, list} -> length(list) > 0 end)
-    |> Enum.sort()
-    |> Enum.reduce(0, fn {box, lenses}, acc ->
-      acc +
-        (lenses
-         |> Enum.with_index(1)
-         |> Enum.map(fn {{_key, value}, idx} -> (box + 1) * value * idx end)
-         |> Enum.sum())
-    end)
+  end
+
+  def lens_power(lenses, box) do
+    lenses
+    |> Enum.with_index(1)
+    |> Enum.map(fn {{_key, value}, idx} -> (box + 1) * value * idx end)
+    |> Enum.sum()
   end
 
   def add_to_hashmap(map, hash, key, value) do
