@@ -25,8 +25,8 @@ defmodule Day15 do
   end
 
   def get_lenses(string) do
-      split_char = if String.contains?(string, "-"), do: "-", else: "="
-      {String.split(string, split_char) |> hd |> hash, string}
+    split_char = if String.contains?(string, "-"), do: "-", else: "="
+    {String.split(string, split_char) |> hd |> hash, string}
   end
 
   def lens_power(lenses, box) do
