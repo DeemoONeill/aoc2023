@@ -4,24 +4,8 @@ defmodule Day16 do
   @down {1, 0}
   @right {0, 1}
 
-  def parse(lines) do
-    lines
-    |> String.split()
-    |> Enum.with_index()
-    |> Enum.reduce(
-      %{},
-      fn {row, y}, map ->
-        row
-        |> String.graphemes()
-        |> Enum.with_index()
-        |> Map.new(fn {item, x} -> {{y, x}, item} end)
-        |> Map.merge(map)
-      end
-    )
-  end
-
   def main() do
-    grid = File.read!("inputs/day16.txt") |> parse
+    grid = File.read!("inputs/day16.txt") |> AOC.parse_grid
 
     grid |> part1 |> IO.inspect(label: "part 1")
     grid |> part2 |> IO.inspect(label: "part 2")
@@ -68,15 +52,15 @@ defmodule Day16 do
         move(next(point, {-x, -y}), grid, {-x, -y}, visited)
 
       {"|", dir} when dir == @left or dir == @right ->
-        visited = move(next(point, @down), grid, @down, visited)
-        move(next(point, @up), grid, @up, visited)
+        move(next(point, @down), grid, @down, visited)
+        |> then(&move(next(point, @up), grid, @up, &1))
 
       {"|", dir} ->
         move(next(point, dir), grid, dir, visited)
 
       {"-", dir} when dir == @up or dir == @down ->
-        visited = move(next(point, @right), grid, @right, visited)
-        move(next(point, @left), grid, @left, visited)
+        move(next(point, @right), grid, @right, visited)
+        |> then(&move(next(point, @left), grid, @left, &1))
 
       {"-", dir} ->
         move(next(point, dir), grid, dir, visited)

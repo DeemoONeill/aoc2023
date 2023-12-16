@@ -1,20 +1,11 @@
 defmodule Day10 do
-  def parse(raw) do
-    for {line, y} <- Enum.with_index(String.split(raw, "\n", trim: true)) do
-      for {char, x} <- Enum.with_index(String.graphemes(line |> String.trim())) do
-        {{y, x}, char}
-      end
-    end
-    |> List.flatten()
-    |> Map.new()
-  end
 
   def start(map) do
     map |> Enum.filter(&(&1 |> elem(1) == "S")) |> hd
   end
 
   def main() do
-    map = File.read!("inputs/day10.txt") |> parse
+    map = File.read!("inputs/day10.txt") |> AOC.parse_grid
 
     starting_point = map |> start
 
