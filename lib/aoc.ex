@@ -1,4 +1,3 @@
-
 defmodule AOC do
   def parse_grid(lines) when is_binary(lines) do
     lines |> String.split() |> parse_grid
