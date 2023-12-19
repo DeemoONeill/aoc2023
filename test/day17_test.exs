@@ -1,0 +1,23 @@
+defmodule Day17Test do
+  use ExUnit.Case
+  import Day17
+
+  @example "2413432311323
+3215453535623
+3255245654254
+3446585845452
+4546657867536
+1438598798454
+4457876987766
+3637877979653
+4654967986887
+4564679986453
+1224686865563
+2546548887735
+4322674655533"
+
+  test "part1 == 102" do
+    {graph, goal} = @example |> parse_to_graph
+    assert graph |> part1(goal) == 102
+  end
+end

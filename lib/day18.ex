@@ -12,9 +12,9 @@ defmodule Day18 do
   end
 
   def main() do
-    lines = File.read!("inputs/day18.txt") |> String.split("\n", trim: true)|> Enum.map(&new/1)
+    lines = File.read!("inputs/day18.txt") |> String.split("\n", trim: true) |> Enum.map(&new/1)
 
-    lines  |> part1 |> IO.inspect(label: "part 1")
+    lines |> part1 |> IO.inspect(label: "part 1")
     lines |> part1(&to_coord2/1) |> IO.inspect(label: "part 2")
   end
 
@@ -32,12 +32,17 @@ defmodule Day18 do
   def to_coord2(%{colour: colour}) do
     <<num::binary-size(byte_size(colour) - 1), dir::binary>> = colour
     num = String.to_integer(num, 16)
-      case dir do
-        "0" -> {0, num} # R
-        "1" -> {num, 0} #"D"
-        "2" -> {0, -num} #"L"
-        "3" -> {-num, 0} #"U"
-      end
+
+    case dir do
+      # R
+      "0" -> {0, num}
+      # "D"
+      "1" -> {num, 0}
+      # "L"
+      "2" -> {0, -num}
+      # "U"
+      "3" -> {-num, 0}
+    end
   end
 
   def to_coord(%{direction: dir, amount: num}) do

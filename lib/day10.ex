@@ -1,11 +1,10 @@
 defmodule Day10 do
-
   def start(map) do
     map |> Enum.filter(&(&1 |> elem(1) == "S")) |> hd
   end
 
   def main() do
-    map = File.read!("inputs/day10.txt") |> AOC.parse_grid
+    map = File.read!("inputs/day10.txt") |> AOC.parse_grid()
 
     starting_point = map |> start
 

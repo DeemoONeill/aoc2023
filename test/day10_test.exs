@@ -15,22 +15,22 @@ defmodule Day10Test do
   LJ..."
 
   test "parses into a map" do
-    assert @example1 |> AOC.parse_grid |> is_map()
+    assert @example1 |> AOC.parse_grid() |> is_map()
   end
 
   test "finds start position" do
-    assert @example1 |> AOC.parse_grid |> start == {{1, 1}, "S"}
+    assert @example1 |> AOC.parse_grid() |> start == {{1, 1}, "S"}
   end
 
   test "part1 example 1 == 4 " do
-    map = @example1 |> AOC.parse_grid
+    map = @example1 |> AOC.parse_grid()
     starting = map |> start
 
     assert map |> part1(starting) == 4
   end
 
   test "part1 example 2 == 8 " do
-    map = @example2 |> AOC.parse_grid
+    map = @example2 |> AOC.parse_grid()
     starting = map |> start
 
     assert map |> part1(starting) == 8

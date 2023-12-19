@@ -5,7 +5,7 @@ defmodule Day16 do
   @right {0, 1}
 
   def main() do
-    grid = File.read!("inputs/day16.txt") |> AOC.parse_grid
+    grid = File.read!("inputs/day16.txt") |> AOC.parse_grid()
 
     grid |> part1 |> IO.inspect(label: "part 1")
     grid |> part2 |> IO.inspect(label: "part 2")
