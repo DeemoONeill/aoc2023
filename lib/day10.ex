@@ -105,7 +105,7 @@ defmodule Day10 do
   end
 
   @doc """
-  Greens forumula for finding the area of an irregular polygon without
+  Greens formula for finding the area of an irregular polygon without
   splitting it into basic shapes.
   ref: https://math.blogoverflow.com/2014/06/04/greens-theorem-and-area-of-polygons/
   """

@@ -87,20 +87,18 @@ defmodule Day19 do
   def part2(input) do
     [workflows, _] = input |> String.split("\n\n")
 
-    workflows |> String.split() |> Enum.map(&parse_workflows(&1, :no_func)) |> Map.new()
+    workflows
+    |> String.split()
+    |> Enum.map(&parse_workflows(&1, :no_func))
+    |> Map.new()
     |> calculate_combinations
-    |> List.flatten
     |> Enum.filter(fn
-    {map, "A"} -> true
-    %{x: 0, m: 0, a: 0, s: 0} -> false
-      %{x: 1..4000, m: 1..4000, a: 1..4000, s: 1..4000} -> false
+      {_, "A"} -> true
       _ -> false
-  end
-    )
-    |> MapSet.new()
+    end)
     |> Enum.map(&elem(&1, 0))
-    |> Enum.map(fn map -> Map.values(map) |> Enum.map(&Range.size/1) |> Enum.product end)
-    |> Enum.sum
+    |> Enum.map(fn map -> Map.values(map) |> Enum.map(&Range.size/1) |> Enum.product() end)
+    |> Enum.sum()
   end
 
   def calculate_combinations(workflows) do
@@ -111,59 +109,71 @@ defmodule Day19 do
     )
   end
 
-
+  @doc """
+  compare the current struct with the comparison, and slice the given key into two structs
+  for example
+  struct = Day19{x: 1..4000, m: 1..4000, a: 1..4000, s: 1..4000}
+  the comparison is x < 1000 rhf
+  this yields two structs
+  Day19{struct | x: 1..999} going on to rhf
+  and Day19{struct | x:1000..4000} going on to the next comparison
+  we then collect all of structs that make it to an A take a product of their sizes
+  and sum those up
+  """
   def calculate_combinations(_workflows, struct, "A"), do: {struct, "A"}
   def calculate_combinations(_workflows, _struct, "R"), do: nil
+
   def calculate_combinations(workflows, struct, key) do
-    blank = %{x: 0, m: 0, a: 0, s: 0}
-    comparisons =
-      Map.get(workflows, key)
-      |> Enum.reduce([struct], fn comparison, [previous_struct | _] = acc ->
+    Map.get(workflows, key)
+    |> Enum.reduce([struct], fn
+      _comparison, [nil | _] = acc ->
+        acc
+
+      comparison, [previous_struct | _] = acc ->
         result =
           case comparison do
             {field, "<", value, loc} ->
-              if ((previous_struct[field]).last) < value do
-
+              if previous_struct[field].last < value do
                 [
-                  blank,
+                  nil,
                   calculate_combinations(workflows, previous_struct, loc)
                 ]
               else
                 [
                   %{previous_struct | field => value..previous_struct[field].last},
-                  calculate_combinations(workflows, %{previous_struct | field => previous_struct[field].first..(value - 1)}, loc),
+                  calculate_combinations(
+                    workflows,
+                    %{previous_struct | field => previous_struct[field].first..(value - 1)},
+                    loc
+                  )
                 ]
               end
 
             {field, ">", value, loc} ->
-              if (previous_struct[field]).first > value do
+              if previous_struct[field].first > value do
                 [
-                  blank,
-                  calculate_combinations(workflows, previous_struct, loc)]
+                  nil,
+                  calculate_combinations(workflows, previous_struct, loc)
+                ]
               else
                 [
                   %{previous_struct | field => previous_struct[field].first..value},
-                  calculate_combinations(workflows, %{previous_struct | field => (value + 1)..previous_struct[field].last}, loc),
+                  calculate_combinations(
+                    workflows,
+                    %{previous_struct | field => (value + 1)..previous_struct[field].last},
+                    loc
+                  )
                 ]
               end
+
             loc when is_binary(loc) ->
-                [blank,
-                calculate_combinations(workflows, previous_struct, loc)
-              ]
+              [nil, calculate_combinations(workflows, previous_struct, loc)]
           end
 
-          result ++ acc
-      end)
-
-    # compare the current struct with the comparison, and slice the given key into two structs
-    # for example
-    # struct = Day19{x: 1..4000, m: 1..4000, a: 1..4000, s: 1..4000}
-    # the comparison is x < 1000 rhf
-    # this yields two structs
-    # Day19{struct | x: 1..999} going on to rhf
-    # and Day19{struct | x:1000..4000} going on to the next comparison
-    # we then collect all of structs that make it to an A take a product of their sizes
-    # and sum those up
+        result ++ acc
+    end)
+    |> List.flatten()
+    |> Enum.filter(& &1)
   end
 
   def apply_workflows(struct, workflows) do

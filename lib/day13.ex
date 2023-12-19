@@ -1,5 +1,4 @@
 defmodule Day13 do
-
   def main() do
     data =
       File.read!("inputs/day13.txt")
