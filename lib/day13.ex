@@ -1,5 +1,4 @@
 defmodule Day13 do
-  # defstruct
 
   def main() do
     data =
